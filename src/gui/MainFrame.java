@@ -21,6 +21,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import controller.Controller;
 
@@ -29,7 +31,6 @@ public class MainFrame extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private TextPanel textArea;
 	private Toolbar toolbar;
 	private FormPanel formPanel;
 	private JFileChooser fileChooser;
@@ -47,7 +48,6 @@ public class MainFrame extends JFrame {
 		setLayout(new BorderLayout());
 
 		toolbar = new Toolbar();
-		textArea = new TextPanel();
 		formPanel = new FormPanel();
 		fileChooser = new JFileChooser();
 		tablePanel = new TablePanel();
@@ -65,6 +65,7 @@ public class MainFrame extends JFrame {
 
 		fileChooser.addChoosableFileFilter(new PersonFileFilter());
 		tablePanel.setData(controller.getPeople());
+		
 		prefsDialog.setPrefsListener(new PrefsListener() {
 			public void preferencesSet(String user, String password, int port) {
 				prefs.put("user", user);
@@ -107,6 +108,16 @@ public class MainFrame extends JFrame {
 			public void formEventOccured(FormEvent event) {
 				controller.addPerson(event);
 				tablePanel.refresh();
+			}
+		});
+		
+		tabPane.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				int index = tabPane.getSelectedIndex();
+				if(index == 1) {
+					messagePanel.refresh();
+				}
 			}
 		});
 		

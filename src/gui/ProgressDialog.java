@@ -29,7 +29,7 @@ public class ProgressDialog extends JDialog {
 		
 		progressBar.setMaximum(10);
 		
-		progressBar.setString("I ARE DOWNLOADING");
+		progressBar.setString("Downloading messages...");
 		
 		setLayout(new FlowLayout());
 		
