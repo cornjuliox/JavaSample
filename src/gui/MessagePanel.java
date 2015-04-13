@@ -11,7 +11,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
@@ -21,18 +20,21 @@ import javax.swing.tree.TreeSelectionModel;
 import model.Message;
 import controller.MessageServer;
 
-public class MessagePanel extends JPanel {
+public class MessagePanel extends JPanel implements ProgressDialogListener {
 	private JTree serverTree;
 	private ServerTreeCellRenderer treeCellRenderer;
 	private ServerTreeCellEditor treeCellEditor;
 	private Set<Integer> selectedServers;
 	private MessageServer messageServer;
 	private ProgressDialog progressDialog;
+	private SwingWorker<List<Message>, Integer> worker;
 
 	public MessagePanel(JFrame parent) {
 		selectedServers = new TreeSet<Integer>();
 		messageServer = new MessageServer();
-		progressDialog = new ProgressDialog(parent) ;
+		progressDialog = new ProgressDialog(parent, "Message Downloading...") ;
+		
+		progressDialog.setListener(this);
 
 		selectedServers.add(1);
 		selectedServers.add(5);
@@ -73,9 +75,6 @@ public class MessagePanel extends JPanel {
 				// TODO Auto-generated method stubdd
 
 			}
-			
-			
-
 		});
 		setLayout(new BorderLayout());
 
@@ -88,9 +87,13 @@ public class MessagePanel extends JPanel {
 		progressDialog.setMaximum(messageServer.getMessageCount());
 		progressDialog.setVisible(true);
 		
-		SwingWorker<List<Message>, Integer> worker = new SwingWorker<List<Message>, Integer>() {
+		worker = new SwingWorker<List<Message>, Integer>() {
 
 			protected void done() {
+				progressDialog.setVisible(false);
+				if(isCancelled()) {
+					return;
+				}
 				try {
 					List<Message> retrievedMessages = get();
 					
@@ -110,8 +113,13 @@ public class MessagePanel extends JPanel {
 				int retrieved = counts.get(counts.size() - 1);
 				progressDialog.setValue(retrieved);
 			}
-
-
+			
+			// how to cancel a thread properly
+			// call thread.cancel()
+			// use isCancelled() within processing code to check if
+			// thread has been cancelled so you can move out of 
+			// process gracefully.
+			// Swing will NOT step in on your behalf.
 			@Override
 			protected List<Message> doInBackground() throws Exception {
 				
@@ -119,6 +127,9 @@ public class MessagePanel extends JPanel {
 				int count = 0;
 				
 				for(Message message: messageServer) {
+					if(isCancelled()) {
+						break;
+					}
 					System.out.println(message.getTitle());
 					
 					retrievedMessages.add(message);
@@ -167,5 +178,13 @@ public class MessagePanel extends JPanel {
 		top.add(branch2);
 
 		return top;
+	}
+
+	@Override
+	public void progressDialogCancelled() {
+		// TODO Auto-generated method stub
+		if(worker != null) {
+			worker.cancel(true);
+		}
 	}
 }
