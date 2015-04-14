@@ -18,6 +18,8 @@ public class PersonTableModel extends AbstractTableModel {
 		switch(columnIndex) {
 		case 1:
 			return true;
+		case 4:
+			return true;
 		case 5:
 			return true;
 		default:
@@ -60,6 +62,9 @@ public class PersonTableModel extends AbstractTableModel {
 		switch(columnIndex) {
 		case 1:
 			person.setName((String)aValue);
+			break;
+		case 4:
+			person.setEmpCat((EmploymentCategory)aValue);
 			break;
 		case 5:
 			person.setUsCitizen((Boolean)aValue);
