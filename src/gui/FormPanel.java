@@ -97,8 +97,8 @@ public class FormPanel extends JPanel {
 		// elements, and then call setModel() on the JComboBox()
 		// instance.
 		DefaultComboBoxModel empModel = new DefaultComboBoxModel();
-		empModel.addElement("Employed");
-		empModel.addElement("Self-employed");
+		empModel.addElement("employed");
+		empModel.addElement("self-employed");
 		empModel.addElement("unemployed");
 
 		empCombo.setModel(empModel);
@@ -126,6 +126,7 @@ public class FormPanel extends JPanel {
 				AgeCategory ageCat = (AgeCategory) ageList.getSelectedValue();
 				
 				String empCat = (String) empCombo.getSelectedItem();
+				
 				String taxId = taxField.getText();
 				boolean usCitizen = citizenCheck.isSelected();
 				String gender = genderGroup.getSelection().getActionCommand();

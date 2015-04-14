@@ -3,6 +3,7 @@ package gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -28,6 +29,7 @@ public class MessageListRenderer implements ListCellRenderer {
 		label = new JLabel();
 		
 		label.setIcon(Utils.createIcon("/images/information24.gif"));
+		label.setFont(Utils.createFont("/fonts/keepcalm-medium.ttf").deriveFont(Font.PLAIN, 14));
 		selectedColor = new Color(210, 210, 255);
 		normalColor = Color.white; 
 		

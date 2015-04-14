@@ -104,6 +104,11 @@ public class MessagePanel extends JPanel implements ProgressDialogListener {
 		messageList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
+				// I'm not entirely sure why buy sometimes message ends up
+				// being null. I think it has something to do with the given index
+				// not being set right after the list is changed.
+				// I've written a small hack to work around it but its puzzling
+				// nonetheless.
 				Message message = (Message)messageList.getSelectedValue();
 				if(message == null) {
 					messageList.setSelectedIndex(0);

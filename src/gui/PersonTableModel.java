@@ -5,16 +5,72 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import model.Person;
+import model.EmploymentCategory;
 
 public class PersonTableModel extends AbstractTableModel {
 
 	private List<Person> db;
 	private String[] columnames = { "ID", "Name", "Occupation", "Age Category",
 			"Employment Category", "US Citizen?", "Tax ID"};
+	
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		switch(columnIndex) {
+		case 1:
+			return true;
+		case 5:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		switch (columnIndex) {
+		case 0:
+			return Integer.class;
+		case 1:
+			return String.class;
+		case 2:
+			return String.class;
+		case 3:
+			return String.class;
+		case 4:
+			return EmploymentCategory.class;
+		case 5:
+			return Boolean.class;
+		case 6:
+			return String.class;
+		default:
+			return null;
+		}
+
+	}
+
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		// TODO Auto-generated method stub
+		if(db == null) {
+			return;
+		}
+		
+        Person person = db.get(rowIndex);
+        
+		switch(columnIndex) {
+		case 1:
+			person.setName((String)aValue);
+			break;
+		case 5:
+			person.setUsCitizen((Boolean)aValue);
+		default:
+			return;
+		}
+		
+	}
 
 	@Override
 	public String getColumnName(int column) {
-		// TODO Auto-generated method stub
 		return columnames[column];
 	}
 
@@ -24,13 +80,11 @@ public class PersonTableModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		// TODO Auto-generated method stub
 		return db.size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
 		// hardcode? why?
 		return 7;
 	}

@@ -51,18 +51,19 @@ public class Controller {
 		}
 		
 		EmploymentCategory empCategory;
-		if(empCat.equals("Employed")) {
+		if(empCat.equals("employed")) {
 			empCategory = EmploymentCategory.employed;
 		}
-		if(empCat.equals("Self-employed")) {
+		else if(empCat.equals("self-employed")) {
 			empCategory = EmploymentCategory.selfEmployed;
 		}
-		if(empCat.equals("unemployed")) {
+		else if(empCat.equals("unemployed")) {
 			empCategory = EmploymentCategory.unemployed;
 		}
 		else {
 			empCategory = EmploymentCategory.other;
 		}
+		System.out.println("Controller set empCategory: " + empCategory);
 		
 		Gender genderCat;
 		if(gender.equals("male")) {
