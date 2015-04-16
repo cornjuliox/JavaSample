@@ -8,7 +8,7 @@ public class Person implements Serializable {
 	 */
 	private static final long serialVersionUID = -8219218627533074108L;
 
-	private static int count = 0;
+	private static int count = 1;
 	
 	private int id;
 	private String name;
@@ -29,10 +29,17 @@ public class Person implements Serializable {
 		this.taxId = taxId;
 		this.usCitizen = usCitizen;
 		this.gender = gender;
-		
 		this.id = count;
 		count++;
 	}
+	
+	public Person(int id, String name, String occupation, AgeCategory ageCategory,
+			EmploymentCategory empCat, String taxId, boolean usCitizen,
+			Gender gender) {
+		this(name, occupation, ageCategory, empCat, taxId, usCitizen, gender);
+		this.id = id;
+	}
+
 
 	public int getId() {
 		return id;
@@ -96,6 +103,10 @@ public class Person implements Serializable {
 
 	public void setGender(Gender gender) {
 		this.gender = gender;
+	}
+	
+	public String toString() {
+		return "ID: " + id + " - " + name;
 	}
 
 }

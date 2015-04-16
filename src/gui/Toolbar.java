@@ -32,8 +32,6 @@ public class Toolbar extends JToolBar implements ActionListener{
 		add(saveButton);
 		add(refreshButton);
 	}
-	
-	
 
 	public void setToolbarListener(ToolbarListener listener) {
 		this.textListener = listener;

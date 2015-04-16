@@ -4,6 +4,7 @@ import gui.FormEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import model.AgeCategory;
@@ -19,10 +20,26 @@ public class Controller {
 		return db.getPeople();
 	}
 	
-	public void connect() {
+	public void connect() throws Exception {
+		db.connect();
 	}
 	
-	public void save() {
+	public void save() throws SQLException {
+		try {
+			db.save();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Cannot perform save operation. Check DB connection and try again.");
+			e.printStackTrace();
+		}
+	}
+	
+	public void load() throws SQLException {
+		db.load();
+	}
+	
+	public void disconnect() {
+		db.disconnect();
 	}
 	
 	public void refresh() {

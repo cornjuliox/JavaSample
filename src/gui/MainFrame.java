@@ -9,6 +9,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.prefs.Preferences;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -24,6 +25,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import model.Database;
 import controller.Controller;
 
 public class MainFrame extends JFrame {
@@ -74,8 +76,8 @@ public class MainFrame extends JFrame {
 			}
 		});
 	
-		String user = prefs.get("user", "");
-		String password = prefs.get("password", "");
+		String user = prefs.get("user", "root");
+		String password = prefs.get("password", "jrZw0mc01.");
 		Integer port = prefs.getInt("port", 3306);
 		prefsDialog.setDefaults(user, password, port);
 		
@@ -87,20 +89,33 @@ public class MainFrame extends JFrame {
 
 		// make sure to call setJMenuBar and not setMenuBar().
 		toolbar.setToolbarListener(new ToolbarListener() {
-
 			@Override
 			public void saveEventOccurred() {
 				// i need a try-execpt wrapping the save() call.
 				// will implement after i've gotten the database working.
 				System.out.println("Save clicked!");
-				controller.save();
-				
+				connect();
+				try {
+					controller.save();
+					JOptionPane.showMessageDialog(MainFrame.this, "Database saved!", "Save complete.", JOptionPane.INFORMATION_MESSAGE);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(MainFrame.this, "Cannot save to database.", "DB Connection Problem", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 			
 			@Override
 			public void refreshEventOccurred() {
 				System.out.println("Refresh clicked!");
-				controller.refresh();
+				connect();
+				try {
+					controller.load();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(MainFrame.this, "Cannot load from database.", "DB Connection Problem", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				tablePanel.refresh();
 			}
 		});
 
@@ -127,6 +142,8 @@ public class MainFrame extends JFrame {
 			public void windowClosing(WindowEvent e) {
 				// TODO Auto-generated method stub
 				System.out.println("Window is Closing.");
+				controller.disconnect();
+				System.out.println("Database connection closed.");
 				dispose();
 				System.gc();
 			}
@@ -143,6 +160,15 @@ public class MainFrame extends JFrame {
 		setSize(640, 480);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setVisible(true);
+	}
+	
+	private void connect() {
+		try {
+			controller.connect();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(MainFrame.this, "Cannot connect to database.", "DB Connection Problem", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private JMenuBar createMenuBar() {
@@ -168,16 +194,16 @@ public class MainFrame extends JFrame {
 		JMenuItem showFormItem = new JCheckBoxMenuItem("Person Form");
 		showFormItem.setSelected(true);
 		showMenu.add(showFormItem);
-		
+
 		windowMenu.add(showMenu);
 		windowMenu.add(prefsItem);
-		
+
 		prefsItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				prefsDialog.setVisible(true);
 			}
 		});
-		
+
 		prefsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
 				ActionEvent.CTRL_MASK));
 
@@ -204,8 +230,9 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		
-		exportDataItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
+
+		exportDataItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
+				ActionEvent.CTRL_MASK));
 
 		exportDataItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
@@ -230,11 +257,12 @@ public class MainFrame extends JFrame {
 		showFormItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) ev.getSource();
-				
-				if(menuItem.isSelected()) {
-					splitPane.setDividerLocation((int)formPanel.getMinimumSize().getWidth());
+
+				if (menuItem.isSelected()) {
+					splitPane.setDividerLocation((int) formPanel
+							.getMinimumSize().getWidth());
 				}
-				
+
 				formPanel.setVisible(menuItem.isSelected());
 			}
 		});
@@ -248,10 +276,11 @@ public class MainFrame extends JFrame {
 						JOptionPane.OK_CANCEL_OPTION);
 				if (action == JOptionPane.OK_OPTION) {
 					WindowListener[] listeners = getWindowListeners();
-					for(WindowListener listener: listeners) {
-						listener.windowClosing(new WindowEvent(MainFrame.this, 0));
+					for (WindowListener listener : listeners) {
+						listener.windowClosing(new WindowEvent(MainFrame.this,
+								0));
 					}
-					
+
 					System.exit(0);
 				}
 			}
